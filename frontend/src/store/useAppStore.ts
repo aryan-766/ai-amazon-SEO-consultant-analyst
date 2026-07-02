@@ -77,12 +77,12 @@ export interface AppState {
 }
 
 export const useAppStore = create<AppState>((set) => ({
-  sessionId: null,
-  filename: null,
-  sessionStatus: 'IDLE',
+  sessionId: 'demo',
+  filename: 'Demo_Amazon_Keywords_Chargers.xlsx',
+  sessionStatus: 'ANALYZED',
   activeTab: 'dashboard',
-  userBrand: '',
-  competitors: [],
+  userBrand: 'Ambrane',
+  competitors: ['Anker', 'Boat', 'Belkin', 'Mivi'],
   categories: [],
   selectedKeyword: null,
   activeListing: null,
