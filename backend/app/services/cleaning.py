@@ -36,6 +36,9 @@ def clean_and_normalize_data(
     df_clean = df.copy()
 
     # 1. Handle missing keywords
+    if keyword_col not in df_clean.columns:
+        df_clean[keyword_col] = ""
+        
     df_clean = df_clean.dropna(subset=[keyword_col])
     df_clean = df_clean[df_clean[keyword_col].astype(str).str.strip() != ""]
     after_null_kw_removal = len(df_clean)
@@ -45,16 +48,22 @@ def clean_and_normalize_data(
     df_clean[keyword_col] = df_clean[keyword_col].apply(clean_keyword_text)
 
     # 3. Handle null/nan in Search Volume and CPR
+    if sv_col not in df_clean.columns:
+        df_clean[sv_col] = 0
     df_clean[sv_col] = pd.to_numeric(df_clean[sv_col], errors='coerce').fillna(0).astype(int)
     # Clamp search volume to >= 0
     df_clean[sv_col] = df_clean[sv_col].clip(lower=0)
 
+    if cpr_col not in df_clean.columns:
+        df_clean[cpr_col] = 0
     df_clean[cpr_col] = pd.to_numeric(df_clean[cpr_col], errors='coerce').fillna(0).astype(int)
     df_clean[cpr_col] = df_clean[cpr_col].clip(lower=0)
 
     # 4. Handle competitor ranks
     # Competitor ranks are stored as numbers; unranked or missing ranks are mapped to 101 (out of range/unranked)
     for competitor, col in competitor_cols_map.items():
+        if col not in df_clean.columns:
+            df_clean[col] = 101
         df_clean[col] = pd.to_numeric(df_clean[col], errors='coerce').fillna(101).astype(int)
         # Check that ranks are between 1 and 101
         df_clean[col] = df_clean[col].apply(lambda x: x if 1 <= x <= 101 else 101)
